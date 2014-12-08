@@ -1,0 +1,33 @@
+/*a style to change the color of the headers on your page and 
+make them underlined.*/
+.header-color-and-underline {
+    color: #66FF66;
+    text-decoration: underline;
+}
+
+/*a style to change the background color of the page.*/
+.background-color {
+	background-color: #FF33CC;
+}
+/*body*/
+body {	
+	background-image: url(/img/symphony.png);
+}
+
+/*a style to change the list-style to something other than the default.*/
+.list-style {
+	list-style-type: square;
+}
+
+/*a style to change the font for the entire page.*/
+.page-font {
+	font-family: Georgia;
+	color: #FF33CC;
+}
+
+/*example*/
+/*
+.fancy-header {
+    color: aqua;
+    text-decoration: underline;
+}
