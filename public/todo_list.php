@@ -91,7 +91,7 @@
         <?php foreach ($todo_array as $key => $value){
              echo "<li>{$value} | <a href='/todo_list.php?remove={$key}'>Completed</a></li>";
             }
-        ?>         
+        ?>        
         <!-- <li>Invade Poland</li>
         <li>Remove the government</li>
         <li>Establish a monarchy</li>
@@ -123,11 +123,11 @@
             <input type="submit" value="Upload">
         </p>
     </form>
-    <?php
+    <?= // alternative php syntax 12/22/2014
     // Check if we saved a file
     // if (isset($savedFilename)) {
         // If we did, show a link to the uploaded file
-        echo "<p> You can grab a copy of your updated file <a href='/{$filename}'>here</a>. Just refresh the page.</p>";
+         "<p> You can grab a copy of your updated file <a href='/{$filename}'>here</a>. Just refresh the page.</p>";
     // }
     ?>
 </body>
