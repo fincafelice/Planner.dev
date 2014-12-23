@@ -19,7 +19,6 @@
                 fwrite($handle, $item . PHP_EOL);
             }
         fclose($handle);
-        // echo "The save was successful.\n";
     }
 
     function openFile($filename) 
@@ -40,14 +39,14 @@
     $todo_array = openFile($filename); // List to show on website
 
     if(isset($_POST['add_item'])) {
-        $todo_array[] = $_POST['add_item'];  
-        saveFile('todo_list.txt', $todo_array);  
+        $todo_array[] = htmlentities(strip_tags($_POST['add_item']));  
+        saveFile($filename, $todo_array); // todo_list.txt
     }
 
     if(isset($_GET['remove'])) {
         $id = $_GET['remove'];
         unset($todo_array[$id]);
-        saveFile('todo_list.txt', $todo_array);
+        saveFile($filename, $todo_array); // todo_list.txt
     }
 
     // Verify there were uploaded files and no errors
@@ -55,12 +54,18 @@
         // Set the destination directory for uploads
         $uploadDir = 'uploads/';
 
-
         // Grab the filename from the uploaded file by using basename
         $uploaded_file = basename($_FILES['file1']['name']);
 
-        // Create the saved filename using the file's original name and our upload directory
-        $savedFilename = $uploadDir . $uploaded_file;
+        if (substr($uploaded_file, -3) != "txt") {
+            // echo filetype($uploaded_file);
+            echo "Please upload only '.txt' files.  " . PHP_EOL;
+            echo "Hit your browser's back button to continue.";
+            exit();
+            } else {
+            // Create the saved filename using the file's original name and our upload directory
+                $savedFilename = $uploadDir . $uploaded_file;
+        }
 
         // Move the file from the temp location to our uploads directory
         move_uploaded_file($_FILES['file1']['tmp_name'], $savedFilename);
@@ -98,7 +103,7 @@
     <form method="POST" action="/todo_list.php">  
     
     <label for="add_item">New Item</label>
-    <input id="add_item" name="add_item" type="text" placeholder = "Add that badboy!">
+    <input id="add_item" name="add_item" type="text" placeholder = "Add this to the list!">
            
         <button type="submit">Add</button>
     <!-- <input type="submit"> -->
@@ -108,13 +113,6 @@
 
     <h1>Upload File</h1>
 
-    <?php
-    // Check if we saved a file
-    if (isset($savedFilename)) {
-        // If we did, show a link to the uploaded file
-        echo "<p>You can download your file <a href='/uploads/{$filename}'>here</a>.</p>";
-    }
-    ?>
 
     <form method="POST" enctype="multipart/form-data">
         <p>
@@ -125,5 +123,12 @@
             <input type="submit" value="Upload">
         </p>
     </form>
+    <?php
+    // Check if we saved a file
+    // if (isset($savedFilename)) {
+        // If we did, show a link to the uploaded file
+        echo "<p> You can grab a copy of your updated file <a href='/{$filename}'>here</a>. Just refresh the page.</p>";
+    // }
+    ?>
 </body>
 </html>
