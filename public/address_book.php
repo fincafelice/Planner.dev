@@ -9,6 +9,27 @@ $addressBook = [
 
 $filename = 'address_book.csv';
 
+function openFile ($filename) {
+    $handle = fopen($filename, 'r');
+    $addressBook = [];
+    while(!feof($handle)) {
+        $row = fgetcsv($handle);
+        if (!empty($row)) {
+            $addressBook[] = $row;
+        }
+    }
+    fclose($handle);
+    return $addressBook;
+}
+
+$addressBook = openFile($filename);
+
+// if($_POST) {
+//     $addressBook[] = $_POST;
+//     saveFile($filename, $addressBook);
+// }
+
+
 // snippet user defined function
 // This function will accept a dirty array; and return a clean one.
 // sanitize ($array);
@@ -20,10 +41,10 @@ function sanitize ($array)
     return $array;
 }
 
-function saveFile ($filename, $addressBook) 
+function saveFile ($filename, $array) 
 {
-	$handle = fopen('address_book.csv', 'w');
-		foreach ($addressBook as $row) {
+	$handle = fopen($filename, 'w');
+		foreach ($array as $row) {
 	    	fputcsv($handle, $row);
 		}
 	fclose($handle);
@@ -40,21 +61,22 @@ function saveFile ($filename, $addressBook)
 			// Strip tags / etc from $value
             $cleanPost = sanitize($_POST);
             array_push($addressBook, $cleanPost);
-            saveFile($filename, $addressBook);
+            saveFile($filename, $addressBook); // address_book.csv
         } else {
 			echo "Please enter all fields.";
 		}
 	// }
 // }
 
-// saveFile($filename, $addressBook); // address_book.csv
+// Add a delete link with a query string to delete the record. 
+// When the page reloads, the record should be gone, and the 
+// save csv should no longer have the entry.
 
-
-// if(isset($_GET['remove'])) {
-//         $id = $_GET['remove'];
-//         unset($array[$id]);
-//         saveFile($filename, $array); // address_book.csv
-// }
+if(isset($_GET['remove'])) {
+        $id = $_GET['remove'];
+        unset($array[$id]);
+        saveFile($filename, $array); // address_book.csv
+}
 
 ?>
 
