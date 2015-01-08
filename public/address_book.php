@@ -6,11 +6,17 @@
 //     ['Minnie Mouse', 'P.O. Box 29901', 'San Francisco', 'CA', '94129', '8883337777', 'cutie@tail.rat'],
 //     ['Someone Else', '123 Lane', 'San Diego', 'CA', '92501', '8885552222', 'me@that.net']
 // ];
-$error = false;
+$error = false; // works with js below
 // create a new class named AddressDataStore to handle reading and writing to the CSV file. 1/8/15
 class AddressDataStore
 {
     public $filename = ''; // empty at this point
+
+    // Allow filename to be set on instantiation
+    function __construct($filename = 'address_book.csv')
+    {
+        $this->filename = $filename;
+    }
 
     public function openFile () // empty at this point
     {
@@ -94,6 +100,39 @@ if(isset($_GET['remove'])) {
         $addressObject->saveFile($addressBook); // call object and save to address_book.csv
 }
 
+
+    // Verify there were uploaded files and no errors
+    if (count($_FILES) > 0 && $_FILES['file1']['error'] == UPLOAD_ERR_OK) {
+        // Set the destination directory for uploads
+        $uploadDir = 'uploads/';
+
+        // Grab the filename from the uploaded file by using basename
+        $uploaded_file = basename($_FILES['file1']['name']);
+
+        if (substr($uploaded_file, -3) != "csv") {
+            // echo filetype($uploaded_file);
+            echo "Please upload only '.txt' files.  " . PHP_EOL;
+            echo "Hit your browser's back button to continue.";
+            exit();
+            } else {
+            // Create the saved filename using the file's original name and our upload directory
+                $savedFilename = $uploadDir . $uploaded_file;
+        }
+
+        // Move the file from the temp location to our uploads directory
+        move_uploaded_file($_FILES['file1']['tmp_name'], $savedFilename);
+        
+
+        // 2nd object for new array from uploaded file
+        $addressObjectFromFile = new AddressDataStore($savedFilename); // pass file due to construct
+        $todo_array2 = $addressObjectFromFile->openFile();
+        $addressBook = array_merge($addressBook, $todo_array2);
+        // var_dump($savedFilename);
+        // var_dump($todo_array);
+        // var_dump($todo_array2);
+        $addressObject->saveFile($addressBook);
+    }    
+
 ?>
 
 
@@ -131,7 +170,7 @@ if(isset($_GET['remove'])) {
 	</table>
 
         <!-- create a form that contains the necessary inputs to add an item.  -->
-    <h2 class = "header-color-and-underline">Add new contact</h2>
+    <h2 class = "header-color-and-underline">Add New Contact</h2>
     <form method="POST" action="/address_book.php">  
     
         <label for="contact">New Contact</label>
@@ -157,6 +196,20 @@ if(isset($_GET['remove'])) {
         <br>
     <!-- <input type="submit"> -->
         <button type="submit">Add</button>
+    </form>
+
+    </form>
+    </ul>
+
+    <h2 class = "header-color-and-underline">Upload File</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <p>
+            <class = "header-color-and-underline"><label for="file1">File to upload: </label>
+            <input type="file" id="file1" name="file1">
+        </p>
+        <p>
+            <input type="submit" value="Upload">
+        </p>
     </form>
 
     <script>
