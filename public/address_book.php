@@ -56,6 +56,11 @@ class AddressDataStore
     		}
     	fclose($handle);
     }
+
+    function __destruct()
+    {
+        echo "Class dismissed!\n";
+    }
 } // end of class AddressDataStore 1/8/15
 
 // $addressBook = openFile($filename); orig call to function
@@ -131,7 +136,8 @@ if(isset($_GET['remove'])) {
         // var_dump($todo_array);
         // var_dump($todo_array2);
         $addressObject->saveFile($addressBook);
-    }    
+    } 
+    unset($addressObject); 
 
 ?>
 
@@ -173,26 +179,26 @@ if(isset($_GET['remove'])) {
     <h2 class = "header-color-and-underline">Add New Contact</h2>
     <form method="POST" action="/address_book.php">  
     
+        <input id="contact" name="contact" type="text" placeholder = "Enter Name.">
         <label for="contact">New Contact</label>
-        <input id="contact" name="contact" type="text" placeholder = "MUST ENTER NAME.">
         <br>
+        <input id="address" name="address" type="text" placeholder = "Enter address.">
     	<label for="address">New Address</label>
-        <input id="address" name="address" type="text" placeholder = "Enter address or NA.">
         <br>
+        <input id="city" name="city" type="text" placeholder = "Enter city.">
         <label for="city">New City</label>
-        <input id="city" name="city" type="text" placeholder = "Enter city or NA.">
         <br>
+        <input id="state" name="state" type="text" placeholder = "Enter state.">
         <label for="state">New State</label>
-        <input id="state" name="state" type="text" placeholder = "Enter state or NA.">
         <br>
+        <input id="zipcode" name="zipcode" type="text" placeholder = "Enter zipcode.">
         <label for="zipcode">New Zipcode</label>
-        <input id="zipcode" name="zipcode" type="text" placeholder = "Enter zipcode or NA.">
         <br>
+        <input id="phone" name="phone" type="text" placeholder = "Enter phone.">
         <label for="phone">New Phone</label>
-        <input id="phone" name="phone" type="text" placeholder = "Enter phone or NA.">
         <br>
+        <input id="email" name="email" type="text" placeholder = "Enter email.">
         <label for="email">New Email</label>
-        <input id="email" name="email" type="text" placeholder = "Enter email or NA.">
         <br>
     <!-- <input type="submit"> -->
         <button type="submit">Add</button>
