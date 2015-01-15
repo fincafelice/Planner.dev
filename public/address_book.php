@@ -1,11 +1,4 @@
 <?php 
-
-// $addressBook = [
-//     ['Fred Flintstone', '1600 Pennsylvania Ave NW', 'Washington', 'DC', '20500', '8885550000', 'fred@stone.rok'],
-//     ['Daffy Duck', 'P.O. Box 1527', 'Long Island City', 'NY', '11101', '8884442222', 'pete@web.net'],
-//     ['Minnie Mouse', 'P.O. Box 29901', 'San Francisco', 'CA', '94129', '8883337777', 'cutie@tail.rat'],
-//     ['Someone Else', '123 Lane', 'San Diego', 'CA', '92501', '8885552222', 'me@that.net']
-// ];
 $error = false; // works with js below
 // create a new class named AddressDataStore to handle reading and writing to the CSV file. 1/8/15
 class AddressDataStore
@@ -32,14 +25,6 @@ class AddressDataStore
         return $addressBook;
     }
 
-        // if($_POST) {
-    //     $addressBook[] = $_POST;
-    //     saveFile($filename, $addressBook);
-    // }
-
-    // snippet user defined function
-    // This function will accept a dirty array; and return a clean one.
-    // sanitize ($array);
     public function sanitize ($array) 
     {
         foreach ($array as $key => $value) {
@@ -56,43 +41,24 @@ class AddressDataStore
     		}
     	fclose($handle);
     }
-
-    function __destruct()
-    {
-        echo "Class dismissed!\n";
-    }
 } // end of class AddressDataStore 1/8/15
 
-// $addressBook = openFile($filename); orig call to function
-
-// instantiate with 3 steps 1/8/15
 $addressObject = new AddressDataStore; // object name 1/8/15
 $addressObject->filename = 'address_book.csv'; // designate which file to use
-// var_dump($addressBook);
 $addressBook = $addressObject->openFile(); // array
 
-// echo "$addressBook";
-
-// $addressBook = new AddressDataStore();
-// $addressBook->filename=$filename;
-// echo $addressBook->saveFile($filename);
-
 // Create a function to store a new entry.
-if(!empty($_POST)) {
-	// foreach ($_POST as $key => $value) {
-		
-		if (!empty($_POST['contact']) && !empty($_POST['address']) && 
-			!empty($_POST['city']) && !empty($_POST['state']) && !empty($_POST['zipcode']) && 
-			!empty($_POST['phone']) && !empty($_POST['email'])) {
-			// Strip tags / etc from $value
-            $cleanPost = $addressObject->sanitize($_POST); // call the object 1/8/15
-            array_push($addressBook, $cleanPost);
-            $addressObject->saveFile($addressBook); // call object and save array to address_book.csv
-        } else {
-			$error = true;
-            // alert("Please enter all fields");
-		}
-	// }
+if(!empty($_POST)) {		
+	if (!empty($_POST['contact']) && !empty($_POST['address']) && 
+		!empty($_POST['city']) && !empty($_POST['state']) && !empty($_POST['zipcode']) && 
+		!empty($_POST['phone']) && !empty($_POST['email'])) {
+		// Strip tags / etc from $value
+        $cleanPost = $addressObject->sanitize($_POST); // call the object 1/8/15
+        array_push($addressBook, $cleanPost);
+        $addressObject->saveFile($addressBook); // call object and save array to address_book.csv
+    } else {
+		$error = true;
+	}
 }
 
 // Add a delete link with a query string to delete the record. 
@@ -105,7 +71,6 @@ if(isset($_GET['remove'])) {
         $addressObject->saveFile($addressBook); // call object and save to address_book.csv
 }
 
-
     // Verify there were uploaded files and no errors
     if (count($_FILES) > 0 && $_FILES['file1']['error'] == UPLOAD_ERR_OK) {
         // Set the destination directory for uploads
@@ -115,7 +80,6 @@ if(isset($_GET['remove'])) {
         $uploaded_file = basename($_FILES['file1']['name']);
 
         if (substr($uploaded_file, -3) != "csv") {
-            // echo filetype($uploaded_file);
             echo "Please upload only '.txt' files.  " . PHP_EOL;
             echo "Hit your browser's back button to continue.";
             exit();
@@ -132,13 +96,8 @@ if(isset($_GET['remove'])) {
         $addressObjectFromFile = new AddressDataStore($savedFilename); // pass file due to construct
         $todo_array2 = $addressObjectFromFile->openFile();
         $addressBook = array_merge($addressBook, $todo_array2);
-        // var_dump($savedFilename);
-        // var_dump($todo_array);
-        // var_dump($todo_array2);
         $addressObject->saveFile($addressBook);
     } 
-    unset($addressObject); 
-
 ?>
 
 
