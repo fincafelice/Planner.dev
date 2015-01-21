@@ -1,30 +1,10 @@
 <?php 
+require_once 'filestore.php';
+
 $error = false; // works with js below
 // create a new class named AddressDataStore to handle reading and writing to the CSV file. 1/8/15
-class AddressDataStore
+class AddressDataStore extends Filestore
 {
-    public $filename = ''; // empty at this point
-
-    // Allow filename to be set on instantiation
-    function __construct($filename = 'address_book.csv')
-    {
-        $this->filename = $filename;
-    }
-
-    public function openFile () // empty at this point
-    {
-        $handle = fopen($this->filename, 'r'); // 1/8/15
-        $addressBook = [];
-        while(!feof($handle)) {
-            $row = fgetcsv($handle);
-            if (!empty($row)) {
-                $addressBook[] = $row;
-            }
-        }
-        fclose($handle);
-        return $addressBook;
-    }
-
     public function sanitize ($array) 
     {
         foreach ($array as $key => $value) {
@@ -32,33 +12,25 @@ class AddressDataStore
         }
         return $array;
     }
-
-    public function saveFile ($array) 
-    {
-    	$handle = fopen($this->filename, 'w'); // 1/8/15
-    		foreach ($array as $row) {
-    	    	fputcsv($handle, $row);
-    		}
-    	fclose($handle);
-    }
+    
 } // end of class AddressDataStore 1/8/15
-
-$addressObject = new AddressDataStore; // object name 1/8/15
-$addressObject->filename = 'address_book.csv'; // designate which file to use
-$addressBook = $addressObject->openFile(); // array
+$filename = 'address_book.csv';
+$addressObject = new AddressDataStore ($filename); // object name 1/8/15
+// $addressObject->filename = 'address_book.csv'; // designate which file to use
+$addressBook = $addressObject->readCSV(); // array
 
 // Create a function to store a new entry.
-if(!empty($_POST)) {		
-	if (!empty($_POST['contact']) && !empty($_POST['address']) && 
-		!empty($_POST['city']) && !empty($_POST['state']) && !empty($_POST['zipcode']) && 
-		!empty($_POST['phone']) && !empty($_POST['email'])) {
-		// Strip tags / etc from $value
+if(!empty($_POST)) {        
+    if (!empty($_POST['contact']) && !empty($_POST['address']) && 
+        !empty($_POST['city']) && !empty($_POST['state']) && !empty($_POST['zipcode']) && 
+        !empty($_POST['phone']) && !empty($_POST['email'])) {
+        // Strip tags / etc from $value
         $cleanPost = $addressObject->sanitize($_POST); // call the object 1/8/15
         array_push($addressBook, $cleanPost);
         $addressObject->saveFile($addressBook); // call object and save array to address_book.csv
     } else {
-		$error = true;
-	}
+        $error = true;
+    }
 }
 
 // Add a delete link with a query string to delete the record. 
@@ -94,7 +66,7 @@ if(isset($_GET['remove'])) {
 
         // 2nd object for new array from uploaded file
         $addressObjectFromFile = new AddressDataStore($savedFilename); // pass file due to construct
-        $todo_array2 = $addressObjectFromFile->openFile();
+        $todo_array2 = $addressObjectFromFile->readCSV();
         $addressBook = array_merge($addressBook, $todo_array2);
         $addressObject->saveFile($addressBook);
     } 
@@ -112,27 +84,27 @@ if(isset($_GET['remove'])) {
 
 
     <table>
-    	<tr>
-    		<th>Contact</th>
-    		<th>Address</th>
-    		<th>City</th>
-    		<th>State</th>
-    		<th>Zipcode</th>
-    		<th>Phone</th>
-    		<th>Email</th>
+        <tr>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zipcode</th>
+            <th>Phone</th>
+            <th>Email</th>
             <th>Remove</th>
-    	</tr>
-    	<!--PHP and echo data -->
-    	<? foreach ($addressBook as $key => $contact): ?>
-    		<tr>
-	    		<? foreach($contact as $value): ?> 
-	    			<td><?= $value ?></td>
-	    		<? endforeach; ?>
+        </tr>
+        <!--PHP and echo data -->
+        <? foreach ($addressBook as $key => $contact): ?>
+            <tr>
+                <? foreach($contact as $value): ?> 
+                    <td><?= $value ?></td>
+                <? endforeach; ?>
                 <td> <a href="?remove=<?=$key;?>">Remove</a> </td>
-	    	</tr>
-	    <? endforeach; ?>
+            </tr>
+        <? endforeach; ?>
 
-	</table>
+    </table>
 
         <!-- create a form that contains the necessary inputs to add an item.  -->
     <h2 class = "header-color-and-underline">Add New Contact</h2>
@@ -142,7 +114,7 @@ if(isset($_GET['remove'])) {
         <label for="contact">New Contact</label>
         <br>
         <input id="address" name="address" type="text" placeholder = "Enter address.">
-    	<label for="address">New Address</label>
+        <label for="address">New Address</label>
         <br>
         <input id="city" name="city" type="text" placeholder = "Enter city.">
         <label for="city">New City</label>
