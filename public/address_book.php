@@ -5,6 +5,12 @@ $error = false; // works with js below
 // create a new class named AddressDataStore to handle reading and writing to the CSV file. 1/8/15
 class AddressDataStore extends Filestore
 {
+    function __construct ($filename)
+    {
+        parent::__construct($filename);
+        $this->filename = strtolower($filename);
+    }
+
     public function sanitize ($array) 
     {
         foreach ($array as $key => $value) {
