@@ -4,17 +4,17 @@ require_once 'filestore.php';
 
     $fileStore = new Filestore('todo_list.txt');
     
-    $todo_array = $fileStore->readLines(); // List to show on website
+    $todo_array = $fileStore->read(); // List to show on website
 
     if(isset($_POST['add_item'])) {
         $todo_array[] = htmlentities(strip_tags($_POST['add_item']));  
-        $fileStore->writeLines($fileStore->filename, $todo_array); // todo_list.txt
+        $fileStore->write($todo_array); // todo_list.txt
     }
 
     if(isset($_GET['remove'])) {
         $id = $_GET['remove'];
         unset($todo_array[$id]);
-        $fileStore->writeLines($fileStore->filename, $todo_array); // todo_list.txt
+        $fileStore->write($todo_array); // todo_list.txt
     }
 
     // Verify there were uploaded files and no errors
@@ -39,30 +39,32 @@ require_once 'filestore.php';
         // create a new Filestore instance for your uploaded file
         $var = new fileStore($savedFilename);
         // use that NEW instance to read in your lines
-        $todo_array2 = $var->readLines($savedFilename);
+        $todo_array2 = $var->read();
+
         $todo_array = array_merge($todo_array, $todo_array2);
-        $fileStore->writeLines($fileStore->filename, $todo_array);
+        $fileStore->write($todo_array);
     }    
 
 ?>
 
 <html>
 <head>
-    <title>TODO List</title>
+    <title>Working TODO List</title>
     <link rel="stylesheet" href="/extstyle.css">
 </head>
 
 <body class = "body page-font">
     <h1 class = "header-color-and-underline">TODO List</h1>
     <ul class = "list-style">
+     
         <?php foreach ($todo_array as $key => $value){
-             echo "<li>{$value} | <a href='/todo_list.php?remove={$key}'>Completed</a></li>";
+             echo "<li>{$value} | <a href='/working_todo_list.php?remove={$key}'>Completed</a></li>";
             }
         ?>        
     </ul>
         <!--create a form that contains the necessary inputs to add a TODO item to the list.-->
     <h2 class = "header-color-and-underline">Add to the list</h2>
-    <form method="POST" action="/todo_list.php">  
+    <form method="POST" action="/working_todo_list.php">  
     
     <label for="add_item">New Item</label>
     <input id="add_item" name="add_item" type="text" placeholder = "Add this to the list!">
