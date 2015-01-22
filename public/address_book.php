@@ -1,14 +1,14 @@
 <?php 
-require_once 'filestore.php';
+require_once('filestore.php');
 
 $error = false; // works with js below
 // create a new class named AddressDataStore to handle reading and writing to the CSV file. 1/8/15
 class AddressDataStore extends Filestore
 {
-    function __construct ($filename)
+    public function __construct ($filename)
     {
         parent::__construct($filename);
-        $this->filename = strtolower($filename);
+        // $this->filename = strtolower($filename);
     }
 
     public function sanitize ($array) 
@@ -23,7 +23,9 @@ class AddressDataStore extends Filestore
 $filename = 'address_book.csv';
 $addressObject = new AddressDataStore ($filename); // object name 1/8/15
 // $addressObject->filename = 'address_book.csv'; // designate which file to use
-$addressBook = $addressObject->readCSV(); // array
+$addressBook = $addressObject->read(); // array
+
+// var_dump($addressObject);
 
 // Create a function to store a new entry.
 if(!empty($_POST)) {        
@@ -33,7 +35,7 @@ if(!empty($_POST)) {
         // Strip tags / etc from $value
         $cleanPost = $addressObject->sanitize($_POST); // call the object 1/8/15
         array_push($addressBook, $cleanPost);
-        $addressObject->saveFile($addressBook); // call object and save array to address_book.csv
+        $addressObject->write($addressBook); // call object and save array to address_book.csv
     } else {
         $error = true;
     }
@@ -46,7 +48,7 @@ if(!empty($_POST)) {
 if(isset($_GET['remove'])) {
         $id = $_GET['remove'];
         unset($addressBook[$id]);
-        $addressObject->saveFile($addressBook); // call object and save to address_book.csv
+        $addressObject->write($addressBook); // call object and save to address_book.csv
 }
 
     // Verify there were uploaded files and no errors
@@ -58,7 +60,7 @@ if(isset($_GET['remove'])) {
         $uploaded_file = basename($_FILES['file1']['name']);
 
         if (substr($uploaded_file, -3) != "csv") {
-            echo "Please upload only '.txt' files.  " . PHP_EOL;
+            echo "Please upload only '.csv' files.  " . PHP_EOL;
             echo "Hit your browser's back button to continue.";
             exit();
             } else {
@@ -72,9 +74,9 @@ if(isset($_GET['remove'])) {
 
         // 2nd object for new array from uploaded file
         $addressObjectFromFile = new AddressDataStore($savedFilename); // pass file due to construct
-        $todo_array2 = $addressObjectFromFile->readCSV();
+        $todo_array2 = $addressObjectFromFile->read();
         $addressBook = array_merge($addressBook, $todo_array2);
-        $addressObject->saveFile($addressBook);
+        $addressObject->write($addressBook);
     } 
 ?>
 
